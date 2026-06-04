@@ -209,37 +209,102 @@ def _find_column_index(header: list[str], candidates: tuple[str, ...]) -> int | 
 
 def _parse_load_profile(tables: list[list[list[str]]], text: str) -> dict[str, float]:
     out: dict[str, float] = {}
+
+    print("LOAD PROFILE START")
+
     for rows in tables:
         if not rows:
             continue
-        header_join = " ".join(rows[0]).lower()
-        if "per second" not in header_join and "per sec" not in header_join:
+
+        header = " ".join(rows[0]).lower()
+
+        # Only process the actual Load Profile table
+        if "per second" not in header:
             continue
-        col = _find_column_index(rows[0], ("per second", "1st per sec", "per sec"))
-        if col is None and len(rows[0]) > 1:
+
+        if "per transaction" not in header:
+            continue
+
+        print("FOUND LOAD PROFILE TABLE")
+
+        col = _find_column_index(
+            rows[0],
+            ("per second", "per sec", "1st per sec")
+        )
+
+        if col is None:
             col = 1
+
         for row in rows[1:]:
+
+            print("LOAD ROW:", row)
+
             if not row:
                 continue
-            label = row[0].lower()
-            val = _parse_float(row[col]) if col is not None and col < len(row) else None
+
+            label = row[0].strip().lower()
+
+            if col >= len(row):
+                continue
+
+            val = _parse_float(row[col])
+
             if val is None:
                 continue
-            if "db time" in label and "cpu" not in label:
+
+            # DB Time(s)
+            if label.startswith("db time"):
                 out["db_time_per_sec"] = val
-            elif label.startswith("physical read") and "total" not in label:
+
+            # DB CPU(s)
+            elif label.startswith("db cpu"):
+                out["db_cpu_per_sec"] = val
+
+            # Physical read (blocks)
+            elif label.startswith("physical read"):
                 out["physical_reads_per_sec"] = val
-            elif "average active sessions" in label or label.strip() == "aas":
-                out["aas"] = val
-    # Text fallback: "DB Time(s): 12.4"
+
+            # Physical write (blocks)
+            elif label.startswith("physical write"):
+                out["physical_writes_per_sec"] = val
+
+        print("LOAD PROFILE RESULT:", out)
+
+        # IMPORTANT:
+        # Stop scanning other tables.
+        return out
+
+    # ---------- FALLBACKS ----------
+
     if "db_time_per_sec" not in out:
-        m = re.search(r"DB\s+Time\s*\(s\)\s*:\s*([0-9,.]+)", text, re.I)
+        m = re.search(
+            r"DB\s+Time\s*\(s\)\s*:\s*([0-9,.]+)",
+            text,
+            re.I,
+        )
         if m:
             out["db_time_per_sec"] = _parse_float(m.group(1)) or 0.0
+
+    if "db_cpu_per_sec" not in out:
+        m = re.search(
+            r"DB\s+CPU\s*\(s\)\s*:\s*([0-9,.]+)",
+            text,
+            re.I,
+        )
+        if m:
+            out["db_cpu_per_sec"] = _parse_float(m.group(1)) or 0.0
+
     if "physical_reads_per_sec" not in out:
-        m = re.search(r"Physical\s+read\s*\([^)]*\)\s*:\s*([0-9,.]+)", text, re.I)
+        m = re.search(
+            r"Physical\s+read.*?:\s*([0-9,.]+)",
+            text,
+            re.I,
+        )
         if m:
             out["physical_reads_per_sec"] = _parse_float(m.group(1)) or 0.0
+
+    print("LOAD PROFILE FALLBACK RESULT:", out)
+
     return out
 
 
@@ -390,27 +455,62 @@ def _parse_instance_efficiency(tables: list[list[list[str]]], text: str) -> floa
 
 
 def _parse_cpu_pct(tables: list[list[list[str]]], text: str) -> float | None:
-    for rows in tables:
-        header = " ".join(rows[0]).lower() if rows else ""
-        if "%total cpu" in header or "host cpu" in header:
-            for row in rows[1:]:
-                for cell in row:
-                    v = _parse_float(cell)
-                    if v is not None and 0 < v <= 100:
-                        return v
-    for label in ("%Total CPU", "% User + System", "CPU Usage"):
-        m = re.search(rf"{re.escape(label)}\s*[:\s]+([0-9,.]+)", text, re.I)
-        if m:
-            v = _parse_float(m.group(1))
-            if v is not None:
-                return v
-    m = re.search(r"Host\s+CPU.*?%User.*?([0-9,.]+).*?%System.*?([0-9,.]+)", text, re.I | re.S)
-    if m:
-        u = _parse_float(m.group(1)) or 0
-        s = _parse_float(m.group(2)) or 0
-        return min(100.0, u + s)
-    return None
 
+    cpu_count = None
+
+    # Find CPU count from Host table
+    for rows in tables:
+        if not rows:
+            continue
+
+        header = rows[0]
+
+        if "CPUs" in header and len(rows) > 1:
+            try:
+                idx = header.index("CPUs")
+                cpu_count = _parse_float(rows[1][idx])
+                print("CPU COUNT =", cpu_count)
+                break
+            except Exception:
+                pass
+
+    # Find DB CPU(s) from Load Profile
+    db_cpu_per_sec = None
+
+    for rows in tables:
+        if not rows:
+            continue
+
+        header_text = " ".join(rows[0]).lower()
+
+        if "per second" not in header_text:
+            continue
+
+        if "per transaction" not in header_text:
+            continue
+
+        for row in rows[1:]:
+            if not row:
+                continue
+
+            label = row[0].strip().lower()
+
+            if label.startswith("db cpu"):
+                db_cpu_per_sec = _parse_float(row[1])
+                break
+
+    if cpu_count and db_cpu_per_sec is not None:
+        cpu_pct = round((db_cpu_per_sec / cpu_count) * 100, 1)
+
+        if cpu_pct > 100:
+            cpu_pct = 100.0
+
+        print("CALCULATED CPU % =", cpu_pct)
+        return cpu_pct
+
+    print("CPU NOT FOUND")
+    return None
+    
 
 def _parse_memory(tables: list[list[list[str]]]) -> tuple[float, float, float | None]:
     pga_alloc = 0.0
@@ -466,14 +566,45 @@ def parse_awr_html(html: str | bytes) -> AwrParseResult:
 
     text = _page_text(html)
     tables = _extract_tables(html)
+    print("\nFIRST TABLE")
+
+    if tables:
+        for row in tables[0][:10]:
+            print(row)    
+    
     notes: dict[str, str] = {}
     warnings: list[str] = []
 
-    db_name = _find_label_value(html, ("DB Name", "Database Name")) or "Oracle Database"
-    instance = _find_label_value(html, ("Instance", "Inst Name", "Instance Name")) or "ORCL"
+    db_name = "Oracle Database"
+    instance = "ORCL"
+
+    if tables:
+        first = tables[0]
+
+        if len(first) >= 2:
+            headers = first[0]
+            values = first[1]
+
+            if "DB Name" in headers:
+                idx = headers.index("DB Name")
+                if idx < len(values):
+                    db_name = values[idx]
+
+        if len(tables) > 1:
+            inst_table = tables[1]
+
+            if len(inst_table) >= 2:
+                headers = inst_table[0]
+                values = inst_table[1]
+
+                if "Instance" in headers:
+                    idx = headers.index("Instance")
+                    if idx < len(values):
+                        instance = values[idx]    
     notes["database"] = db_name
     notes["instance"] = instance
-
+    
+ 
     elapsed = _snap_elapsed_minutes(text) or 60.0
     notes["elapsed_minutes"] = f"{elapsed:.1f}"
 
@@ -535,6 +666,7 @@ def parse_awr_html(html: str | bytes) -> AwrParseResult:
         warnings.append("Shared pool free % not found; assumed 15%.")
 
     aas = _parse_active_sessions(text, load, elapsed)
+
 
     metrics = AwrMetrics(
         database_name=db_name[:128],
