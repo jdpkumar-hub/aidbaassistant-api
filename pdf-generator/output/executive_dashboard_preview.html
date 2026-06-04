@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Executive Dashboard — PRODDB (Sample AWR)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      background: #0a1628;
+      color: #f8fafc;
+      line-height: 1.5;
+    }
+    .banner {
+      background: rgba(15, 39, 68, 0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.75rem; margin: 0 0 0.25rem; }
+    .caption { color: #94a3b8; font-size: 0.9rem; margin-bottom: 2rem; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 800px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    .kpi {
+      background: linear-gradient(135deg, #0f2744, #0a1628);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 12px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+    }
+    .kpi-value { font-size: 1.5rem; font-weight: 700; margin-top: 0.35rem; }
+    .kpi-sub { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
+    .amber { color: #f59e0b; }
+    .rationale {
+      font-size: 0.85rem;
+      color: #f59e0b;
+      margin-bottom: 2rem;
+      padding: 0.75rem 1rem;
+      background: rgba(245, 158, 11, 0.08);
+      border-radius: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .panel {
+      background: rgba(15, 39, 68, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel h2 { font-size: 1rem; margin: 0 0 1rem; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.05em; }
+    .panel h3 { font-size: 0.85rem; margin: 1.25rem 0 0.5rem; color: #94a3b8; text-transform: uppercase; }
+    .panel p, .panel li { color: #cbd5e1; font-size: 0.9rem; }
+    .panel ol { padding-left: 1.25rem; }
+    .panel li { margin-bottom: 0.5rem; }
+    strong { color: #fff; }
+    .source { font-size: 0.75rem; color: #64748b; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="banner">Powered by AI DBA Assistant Analysis Engine · Sample: test_awr_sample.html</div>
+  <div class="wrap">
+    <h1>Executive Dashboard</h1>
+    <p class="caption">Oracle DBA Rule-Based Assessment · PRODDB / ORCL1 · parsed from uploaded AWR HTML</p>
+
+    <p style="font-size:0.85rem;color:#94a3b8;margin-bottom:1rem">Assessment at a glance</p>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Health Score</div>
+        <div class="kpi-value amber">62 / 100</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Risk Level</div>
+        <div class="kpi-value amber">Medium</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Bottleneck Classification</div>
+        <div class="kpi-value" style="font-size:1.1rem">Random IO Bottleneck</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Confidence</div>
+        <div class="kpi-value">44.9%</div>
+        <div class="kpi-sub">Bottleneck classification</div>
+      </div>
+    </div>
+
+    <p class="rationale">Random IO Bottleneck (score 97). Top wait 'db file sequential read' (42.3% DB time) and 12,500 physical reads/sec — typical of index/single-block I/O.</p>
+
+    <div class="panel">
+      <h2>Executive Summary</h2>
+
+      <h3>Business Summary</h3>
+      <p>During the 60-minute AWR window, <strong>PRODDB</strong> (<strong>ORCL1</strong>) recorded a database health score of <strong>62/100</strong>, classified as <strong>Medium risk</strong>. The primary workload constraint is a <strong>Random IO Bottleneck</strong>, which should be addressed before the next peak business window. User-facing queries and OLTP workflows may experience latency from storage read latency. Moderate risk warrants proactive tuning to avoid escalation. The assessment identified <strong>4 critical</strong> rule-based finding(s) requiring DBA and application coordination.</p>
+
+      <h3>Technical Summary</h3>
+      <p><strong>Snapshot:</strong> 60 min · <strong>AAS:</strong> 12.4 · <strong>Active sessions (avg):</strong> 12</p>
+      <p><strong>Bottleneck:</strong> Random IO Bottleneck (confidence 45%) — Top wait <em>db file sequential read</em> (42.3% DB time) and 12,500 physical reads/sec.</p>
+      <p><strong>Core metrics:</strong> CPU 78.0% · Buffer busy 18.1% · Log file sync 12.4% · Top SQL <strong>abc123xyz</strong> (31.2% DB time) · Buffer cache hit 86.4%</p>
+
+      <h3>Top 5 Actions</h3>
+      <ol>
+        <li>Tune SQL for index-friendly access; review storage subsystem and file layout.</li>
+        <li>Tune SQL_ID abc123xyz: review execution plan, indexes, and bind variable usage.</li>
+        <li>Prioritize wait event analysis; correlate with top SQL and session blocking chains.</li>
+        <li>Investigate hot rows/index blocks; consider ASSM, reverse key indexes, or hash partitioning.</li>
+        <li>Monitor CPU trend across snapshots; validate top SQL and connection pool sizing.</li>
+      </ol>
+    </div>
+
+    <p class="source">Generated from pdf-generator/test_awr_sample.html via health_score_engine, bottleneck_engine, executive_summary_generator.</p>
+  </div>
+</body>
+</html>
