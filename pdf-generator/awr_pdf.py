@@ -423,7 +423,7 @@ def _rule_findings_table(rows: list[RuleFindingRow]) -> Table:
     )
 
     data = [
-        ["Severity", "Rule", "Finding", "Recommendation"]
+        ["Severity", "Rule", "Finding", "REcommendation"]
     ]
 
     for r in rows:
@@ -437,10 +437,10 @@ def _rule_findings_table(rows: list[RuleFindingRow]) -> Table:
     t = Table(
         data,
         colWidths=[
-            0.8 * inch,   # Severity
+            0.5 * inch,   # Severity
             0.8 * inch,   # Rule
             2.5 * inch,   # Finding
-            2.8 * inch,   # Recommendation
+            3.8 * inch,   # Recommendation
         ],
         repeatRows=1,
     )
