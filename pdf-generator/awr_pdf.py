@@ -376,7 +376,7 @@ def _wait_events_table(rows: list[WaitEventRow]) -> Table:
     data = [["Wait Event", "% DB Time", "Waits", "Severity"]] + [
         [r.wait_event, r.pct_db_time, r.waits, r.severity] for r in rows
     ]
-    t = Table(data, colWidths=[3.0 * inch, 0.8 * inch, 1.0 * inch, 0.8 * inch])
+    t = Table(data, colWidths=[2.6 * inch, 1.0 * inch, 1.2 * inch, 1.0 * inch])
     style = _dashboard_table_style(NAVY_MID)
     extra = []
     for i, row in enumerate(rows, start=1):
@@ -396,14 +396,7 @@ def _top_sql_table(rows: list[TopSqlRow]) -> Table:
     ]
     t = Table(
         data,
-#       colWidths=[1.1 * inch, 0.85 * inch, 0.95 * inch, 0.9 * inch, 1.6 * inch],
-        colWidths=[
-            1.2 * inch,
-            0.8 * inch,
-            0.9 * inch,
-            0.9 * inch,
-            2.2 * inch
-        ],       
+        colWidths=[1.1 * inch, 0.85 * inch, 0.95 * inch, 0.9 * inch, 1.6 * inch],
     )
     style = _dashboard_table_style(NAVY)
     extra = [("FONTNAME", (0, 1), (0, -1), "Courier"), ("FONTSIZE", (0, 1), (0, -1), 8)]
@@ -412,62 +405,23 @@ def _top_sql_table(rows: list[TopSqlRow]) -> Table:
 
 
 def _rule_findings_table(rows: list[RuleFindingRow]) -> Table:
-    styles = getSampleStyleSheet()
-
-    body_style = ParagraphStyle(
-        "TableBody",
-        parent=styles["BodyText"],
-        fontSize=8,
-        leading=10,
-        wordWrap="LTR",
-    )
-
-    data = [
-        ["Severity", "Rule", "Finding", "REcommendation"]
+    data = [["Severity", "Rule", "Finding", "Recommendation"]] + [
+        [r.severity, r.rule_id, r.finding, r.recommendation] for r in rows
     ]
-
-    for r in rows:
-        data.append([
-            Paragraph(r.severity, body_style),
-            Paragraph(r.rule_id, body_style),
-            Paragraph(r.finding, body_style),
-            Paragraph(r.recommendation, body_style),
-        ])
-
     t = Table(
         data,
-        colWidths=[
-            0.5 * inch,   # Severity
-            0.8 * inch,   # Rule
-            2.5 * inch,   # Finding
-            3.8 * inch,   # Recommendation
-        ],
-        repeatRows=1,
+        colWidths=[0.85 * inch, 0.75 * inch, 2.2 * inch, 2.0 * inch],
     )
-
     style = _dashboard_table_style(NAVY_MID)
-
-    extra = [
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("WORDWRAP", (0, 0), (-1, -1), "LTR"),
-    ]
-
+    extra = []
     for i, row in enumerate(rows, start=1):
         sev = row.severity.lower()
-
         if sev in ("critical", "red"):
             extra.append(("TEXTCOLOR", (0, i), (0, i), RED))
             extra.append(("FONTNAME", (0, i), (0, i), "Helvetica-Bold"))
-
         elif sev in ("warning", "amber"):
             extra.append(("TEXTCOLOR", (0, i), (0, i), AMBER))
-            extra.append(("FONTNAME", (0, i), (0, i), "Helvetica-Bold"))
-
-        elif sev in ("green", "normal"):
-            extra.append(("TEXTCOLOR", (0, i), (0, i), GREEN))
-
     t.setStyle(TableStyle(list(style.getCommands()) + extra))
-
     return t
 
 
@@ -564,28 +518,7 @@ def generate_awr_pdf(data: AwrReportData, output_path: str | Path) -> Path:
         "tuning opportunities prior to the next business peak."
     )
     story.append(Paragraph(summary, styles["body"]))
-    meta_data = [
-        ["Database", data.database_name],
-        ["Instance", data.instance_name],
-        ["Health Score", f"{data.health_score}/100"],
-        ["Risk Level", data.risk_level],
-        ["Generated", data.generated_at.strftime("%Y-%m-%d %H:%M")],
-    ]
 
-    meta_table = Table(
-        meta_data,
-        colWidths=[1.5 * inch, 4.5 * inch]
-    )
-
-    meta_table.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (-1,-1), LIGHT_BG),
-        ("BOX", (0,0), (-1,-1), 0.5, BORDER),
-        ("INNERGRID", (0,0), (-1,-1), 0.25, BORDER),
-        ("FONTNAME", (0,0), (0,-1), "Helvetica-Bold"),
-        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
-    ]))
-    story.append(Spacer(1, 0.1 * inch))
-    story.append(meta_table)
     # Health Score Card
     story.extend(_section_header("Health Score Card", styles))
     story.append(_health_score_card(data, styles))

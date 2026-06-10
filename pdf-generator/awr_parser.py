@@ -5,7 +5,7 @@ Uses only data extracted from the uploaded report — no demo fallbacks.
 """
 
 from __future__ import annotations
-
+ 
 import re
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -32,7 +32,9 @@ class WaitEventRow:
 class TopSqlRow:
     sql_id: str
     pct_db_time: float
-
+    sql_text: str | None = None
+    executions: str | None = None
+    elapsed_sec: str | None = None
 
 @dataclass
 class AwrParseResult:
@@ -67,7 +69,6 @@ def _normalize_event(name: str) -> str:
     if n.upper() in ("DB CPU", "CPU TIME", "CPU"):
         return "CPU time"
     return n
-
 
 class _TableParser(HTMLParser):
     """Minimal HTML table extractor when BeautifulSoup is unavailable."""
@@ -363,6 +364,7 @@ def _parse_wait_events(
             if pct is None:
                 continue
             key = event.lower()
+            print(f"WAIT EVENT: {event}  PCT={pct}")
             event_pcts[key] = pct
             event_display[key] = event
             if pct > best_pct:
@@ -378,6 +380,44 @@ def _parse_wait_events(
         reverse=True,
     )
     return best_event, best_pct, event_pcts, wait_rows
+    
+import re
+
+def extract_sql_text_map(html: str):
+
+    sql_map = {}
+
+    pos = html.find("Complete List of SQL Text")
+
+    if pos == -1:
+        return sql_map
+
+    section = html[pos:]
+
+    pattern = re.compile(
+        r'<a class="awr" name="([0-9a-z]{13})"></a>.*?'
+        r'<pre_sqltext class="awr">(.*?)</pre_sqltext>',
+        re.IGNORECASE | re.DOTALL
+    )
+
+    matches = pattern.findall(section)
+
+    print(f"\nFOUND {len(matches)} SQL STATEMENTS")
+
+    for sql_id, sql_text in matches:
+
+        cleaned = re.sub(r"<.*?>", " ", sql_text)
+        cleaned = cleaned.replace("&lt;", "<")
+        cleaned = cleaned.replace("&gt;", ">")
+        cleaned = cleaned.replace("&quot;", '"')
+        cleaned = " ".join(cleaned.split())
+
+        sql_map[sql_id.lower()] = cleaned
+
+        print("\nSQL_ID =", sql_id)
+        print("SQL_TEXT =", cleaned[:100])
+
+    return sql_map
 
 
 def _parse_top_sql_list(
@@ -398,6 +438,12 @@ def _parse_top_sql_list(
 
     results: list[TopSqlRow] = []
     seen: set[str] = set()
+
+    sql_text_map = extract_sql_text_map(html)
+    
+    print("\nSQL MAP KEYS:")
+    for k in list(sql_text_map.keys())[:20]:
+        print(k)    
 
     for rows in sql_tables:
         if len(rows) < 2:
@@ -422,13 +468,22 @@ def _parse_top_sql_list(
             if pct_col is not None and pct_col < len(row):
                 pct = _parse_float(row[pct_col]) or 0.0
             seen.add(sql_id)
-            results.append(TopSqlRow(sql_id=sql_id, pct_db_time=pct))
+            results.append(
+                TopSqlRow(
+                    sql_id=sql_id,
+                    pct_db_time=pct,
+                    sql_text=sql_text_map.get(sql_id, "")
+                )
+            )            
             if len(results) >= limit:
                 break
         if results:
             break
 
     results.sort(key=lambda r: r.pct_db_time, reverse=True)
+    print("\nTOP SQL IDS:")
+    for row in results[:10]:
+        print(row.sql_id)    
     return results[:limit]
 
 
@@ -652,7 +707,7 @@ def parse_awr_html(html: str | bytes) -> AwrParseResult:
 
     hit = _parse_instance_efficiency(tables, text)
     if hit is None:
-        warnings.append("Buffer cache hit ratio not found; using 90% for scoring only.")
+#       warnings.append("Buffer cache hit ratio not found; using 90% for scoring only.")
         hit = 90.0
     notes["buffer_cache_hit"] = f"{hit:.1f}%"
 
@@ -663,7 +718,7 @@ def parse_awr_html(html: str | bytes) -> AwrParseResult:
         pga_alloc = pga_target * 0.5
     if shared_free is None:
         shared_free = 15.0
-        warnings.append("Shared pool free % not found; assumed 15%.")
+#       warnings.append("Shared pool free % not found; assumed 15%.")
 
     aas = _parse_active_sessions(text, load, elapsed)
 
