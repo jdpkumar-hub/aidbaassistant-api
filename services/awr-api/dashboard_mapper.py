@@ -25,12 +25,13 @@ def payload_to_dashboard(payload: dict) -> DashboardModel | None:
     if not metrics or not health or not bottleneck:
         return None
 
-    top_sql = [
+    top_sql = [    
         TopSqlModel(
             sqlId=row["sqlId"],
+            sqlText=row.get("sqlText", ""),
             pctDbTime=row["pctDbTime"],
-            executions=row.get("executions") or "—",
-            elapsedSec=row.get("elapsedSec") or "—",
+            executions=row.get("executions") or "-",
+            elapsedSec=row.get("elapsedSec") or "-",
         )
         for row in payload.get("topSql") or []
     ]
@@ -42,6 +43,7 @@ def payload_to_dashboard(payload: dict) -> DashboardModel | None:
     return DashboardModel(
         databaseName=metrics["databaseName"],
         instanceName=metrics["instanceName"],
+        severity=payload.get("severity"),       
         snapWindow=payload.get("snapWindow")
         or f"{metrics.get('dbTimeMinutes', 60):.0f} min snapshot",
         healthScore=health["healthScore"],
@@ -51,6 +53,8 @@ def payload_to_dashboard(payload: dict) -> DashboardModel | None:
         bottleneckRationale=bottleneck["rationale"],
         businessSummary=(summary or {}).get("businessSummary", ""),
         technicalSummary=(summary or {}).get("technicalSummary", ""),
+        intelligentFinding=payload.get("intelligent_finding"),
+        sqlInsight=payload.get("sql_insight"),
         waitEvents=[
             WaitEventModel(event=w["event"], pctDbTime=w["pctDbTime"])
             for w in payload.get("waitEvents") or []
@@ -74,6 +78,9 @@ def dict_to_analyze_response(record: dict) -> AnalyzeResponse:
         analysisId=record.get("analysisId"),
         fileName=record.get("fileName"),
         createdAt=record.get("createdAt"),
+        severity=record.get("severity"),
+        intelligentFinding=record.get("intelligent_finding"),
+        sqlInsight=record.get("sql_insight"),        
         warnings=record.get("warnings") or [],
         extractionNotes=record.get("extractionNotes") or {},
         metrics=MetricsModel(**metrics) if metrics else None,

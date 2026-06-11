@@ -1,0 +1,18 @@
+{
+  "health": 62,
+  "risk": "Medium",
+  "bottleneck": "Random IO Bottleneck",
+  "confidence": 44.9,
+  "business": "During the 60-minute AWR window, **PRODDB** (ORCL1) recorded a database health score of **62/100**, classified as **Medium risk**. The primary workload constraint is a **Random IO Bottleneck**, which should be addressed before the next peak business window. User-facing queries and OLTP workflows may experience latency from storage read latency. Moderate risk warrants proactive tuning to avoid escalation. The assessment identified **4 critical** rule-based finding(s) requiring DBA and application coordination.",
+  "technical": "**Snapshot:** 60 min \u00b7 **AAS:** 12.4 \u00b7 **Active sessions (avg):** 12\n\n**Bottleneck:** Random IO Bottleneck (confidence 45%) \u2014 Random IO Bottleneck (score 97). Top wait 'db file sequential read' (42.3% DB time) and 12,500 physical reads/sec \u2014 typical of index/single-block I/O.\n\n**Core metrics:** CPU 78.0% \u00b7 Top wait *db file sequential read* (42.3% DB time) \u00b7 Buffer busy 18.1% \u00b7 Log file sync 12.4% \u00b7 Top SQL **abc123xyz** (31.2% DB time) \u00b7 Physical reads 12,500/sec \u00b7 Buffer cache hit 86.4%\n\n**Health score dimensions:**\n- **CPU Utilization:** 78.0% utilization (dimension score 78/100)\n- **Top Wait Event:** db file sequential read (42.3% DB time) (dimension score 70/100)\n- **Buffer Busy Waits:** 18.1% of DB time (dimension score 66/100)\n- **Log File Sync:** 12.4% DB time (dimension score 63/100)\n- **Top SQL Concentration:** SQL_ID abc123xyz (31.2% DB time) (dimension score 64/100)\n- **I/O Pressure:** 12,500 physical reads/sec (dimension score 25/100)\n\n**Rule engine:** 9 findings (4 critical, 5 warning). Key signals:\n- **[IO-003]** Top wait 'db file sequential read' at 42.3% \u2014 I/O bound workload.\n- **[WAIT-001]** Top wait 'db file sequential read' dominates at 42.3% of database time.\n- **[WAIT-003]** Buffer busy waits at 18.1% \u2014 hot block contention on data blocks.\n- **[CPU-002]** CPU utilization elevated at 78.0% (threshold 70%).\n- **[CPU-004]** Average Active Sessions 12.4 above warning threshold (8).",
+  "actions": [
+    "Tune SQL for index-friendly access; review storage subsystem and file layout.",
+    "Tune SQL_ID abc123xyz: review execution plan, indexes, and bind variable usage.",
+    "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+    "Investigate hot rows/index blocks; consider ASSM, reverse key indexes, or hash partitioning.",
+    "Monitor CPU trend across snapshots; validate top SQL and connection pool sizing."
+  ],
+  "rationale": "Random IO Bottleneck (score 97). Top wait 'db file sequential read' (42.3% DB time) and 12,500 physical reads/sec \u2014 typical of index/single-block I/O.",
+  "db": "PRODDB",
+  "inst": "ORCL1"
+}

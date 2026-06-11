@@ -64,6 +64,7 @@ class WaitEventModel(BaseModel):
 
 class TopSqlModel(BaseModel):
     sqlId: str
+    sqlText: str = ""
     pctDbTime: float
     executions: str | None = None
     elapsedSec: str | None = None
@@ -89,11 +90,14 @@ class DashboardModel(BaseModel):
     snapWindow: str
     healthScore: int
     riskLevel: RiskLevel
+    severity: dict | None = None
     bottleneck: str
     confidence: float
     bottleneckRationale: str
     businessSummary: str
     technicalSummary: str
+    intelligentFinding: dict | None = None
+    sqlInsight: dict | None = None
     waitEvents: list[WaitEventModel]
     topSql: list[TopSqlModel]
     recommendations: list[str]
@@ -112,9 +116,13 @@ class AnalyzeResponse(BaseModel):
     snapWindow: str | None = None
     health: HealthModel | None = None
     bottleneck: BottleneckModel | None = None
+    severity: dict | None = None
     summary: SummaryModel | None = None
     waitEvents: list[WaitEventModel] = Field(default_factory=list)
     topSql: list[TopSqlModel] = Field(default_factory=list)
+    severity: dict | None = None
+    intelligentFinding: dict | None = None
+    sqlInsight: dict | None = None    
     recommendations: list[str] = Field(default_factory=list)
     rules: RulesModel | None = None
     dashboard: DashboardModel | None = None
