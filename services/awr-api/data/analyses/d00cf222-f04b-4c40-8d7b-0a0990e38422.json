@@ -1,0 +1,315 @@
+{
+  "success": true,
+  "warnings": [
+    "Buffer cache hit ratio not found; using 90% for scoring only.",
+    "Shared pool free % not found; assumed 15%."
+  ],
+  "extractionNotes": {
+    "database": "DB Id",
+    "instance": "Inst Num",
+    "elapsed_minutes": "60.0",
+    "cpu_usage_pct": "35011.0%",
+    "top_wait": "db file sequential read (84.8%)",
+    "top_sql": "gua0wyp1qmucq (95.9%)",
+    "buffer_cache_hit": "90.0%"
+  },
+  "metrics": {
+    "databaseName": "DB Id",
+    "instanceName": "Inst Num",
+    "cpuUsagePct": 35011.0,
+    "dbTimeAas": 42164.33,
+    "dbTimeMinutes": 60.0,
+    "topWaitEvent": "db file sequential read",
+    "topWaitEventPct": 84.8,
+    "topSqlId": "gua0wyp1qmucq",
+    "topSqlDbTimePct": 95.9,
+    "bufferBusyWaitsPct": 0.0,
+    "activeSessionsAvg": 42164.33,
+    "physicalReadsPerSec": 27.73,
+    "logFileSyncPct": 0.0,
+    "bufferCacheHitRatioPct": 90.0,
+    "pgaAllocatedMb": 512.0,
+    "pgaTargetMb": 1024.0,
+    "sharedPoolFreePct": 15.0
+  },
+  "snapWindow": "60 min snapshot",
+  "health": {
+    "healthScore": 27,
+    "riskLevel": "High",
+    "dimensions": [
+      {
+        "name": "CPU Utilization",
+        "score": 0.0,
+        "penalty": 20.0,
+        "maxPenalty": 20.0,
+        "detail": "35011.0% utilization"
+      },
+      {
+        "name": "Top Wait Event",
+        "score": 0.0,
+        "penalty": 20.0,
+        "maxPenalty": 20.0,
+        "detail": "db file sequential read (84.8% DB time)"
+      },
+      {
+        "name": "Buffer Busy Waits",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 15.0,
+        "detail": "0.0% of DB time"
+      },
+      {
+        "name": "Log File Sync",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 12.0,
+        "detail": "0.0% DB time"
+      },
+      {
+        "name": "Top SQL Concentration",
+        "score": 0.0,
+        "penalty": 18.0,
+        "maxPenalty": 18.0,
+        "detail": "SQL_ID gua0wyp1qmucq (95.9% DB time)"
+      },
+      {
+        "name": "I/O Pressure",
+        "score": 0.0,
+        "penalty": 15.0,
+        "maxPenalty": 15.0,
+        "detail": "28 physical reads/sec"
+      }
+    ]
+  },
+  "bottleneck": {
+    "classification": "CPU Bottleneck",
+    "confidence": 99.8,
+    "rationale": "CPU Bottleneck (score 52434). CPU utilization 35011.0% with top wait profile indicating CPU-bound work.",
+    "scores": {
+      "CPU Bottleneck": 52434.5,
+      "Random IO Bottleneck": 102.9,
+      "Sequential Scan Bottleneck": 0.0,
+      "Commit Bottleneck": 0.0,
+      "Concurrency Bottleneck": 0.0,
+      "Memory Bottleneck": 0.0
+    }
+  },
+  "summary": {
+    "businessSummary": "During the 60-minute AWR window, **DB Id** (Inst Num) recorded a database health score of **27/100**, classified as **High risk**. The primary workload constraint is a **CPU Bottleneck**, which requires immediate leadership attention and a focused remediation plan. Application response times and batch throughput may degrade under sustained CPU pressure. Elevated risk suggests potential SLA exposure if left unaddressed. The assessment identified **5 critical** rule-based finding(s) requiring DBA and application coordination.",
+    "technicalSummary": "**Snapshot:** 60 min \u00b7 **AAS:** 42164.3 \u00b7 **Active sessions (avg):** 42164\n\n**Bottleneck:** CPU Bottleneck (confidence 100%) \u2014 CPU Bottleneck (score 52434). CPU utilization 35011.0% with top wait profile indicating CPU-bound work.\n\n**Core metrics:** CPU 35011.0% \u00b7 Top wait *db file sequential read* (84.8% DB time) \u00b7 Buffer busy 0.0% \u00b7 Log file sync 0.0% \u00b7 Top SQL **gua0wyp1qmucq** (95.9% DB time) \u00b7 Physical reads 28/sec \u00b7 Buffer cache hit 90.0%\n\n**Health score dimensions:**\n- **CPU Utilization:** 35011.0% utilization (dimension score 0/100)\n- **Top Wait Event:** db file sequential read (84.8% DB time) (dimension score 0/100)\n- **Buffer Busy Waits:** 0.0% of DB time (dimension score 100/100)\n- **Log File Sync:** 0.0% DB time (dimension score 100/100)\n- **Top SQL Concentration:** SQL_ID gua0wyp1qmucq (95.9% DB time) (dimension score 0/100)\n- **I/O Pressure:** 28 physical reads/sec (dimension score 0/100)\n\n**Rule engine:** 6 findings (5 critical, 1 warning). Key signals:\n- **[CPU-001]** CPU utilization critical at 35011.0% (threshold 85%).\n- **[CPU-003]** Average Active Sessions 42164.3 exceeds critical threshold (16).\n- **[IO-003]** Top wait 'db file sequential read' at 84.8% \u2014 I/O bound workload.\n- **[SQL-003]** SQL_ID gua0wyp1qmucq correlates with high CPU (35011.0%) and DB time share.",
+    "topActions": [
+      "Profile top CPU sessions and SQL; reduce parse/execute overhead and review runaway queries.",
+      "Review connection storms, job scheduling, and consider resource manager limits.",
+      "Tune SQL for index-friendly access; review storage subsystem and file layout.",
+      "Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage.",
+      "Prioritize wait event analysis; correlate with top SQL and session blocking chains."
+    ],
+    "markdown": "# Executive Summary \u2014 DB Id\n\n**Instance:** Inst Num \u00b7 **Health Score:** 27/100 \u00b7 **Risk Level:** High\n\n## Business Summary\n\nDuring the 60-minute AWR window, **DB Id** (Inst Num) recorded a database health score of **27/100**, classified as **High risk**. The primary workload constraint is a **CPU Bottleneck**, which requires immediate leadership attention and a focused remediation plan. Application response times and batch throughput may degrade under sustained CPU pressure. Elevated risk suggests potential SLA exposure if left unaddressed. The assessment identified **5 critical** rule-based finding(s) requiring DBA and application coordination.\n\n## Technical Summary\n\n**Snapshot:** 60 min \u00b7 **AAS:** 42164.3 \u00b7 **Active sessions (avg):** 42164\n\n**Bottleneck:** CPU Bottleneck (confidence 100%) \u2014 CPU Bottleneck (score 52434). CPU utilization 35011.0% with top wait profile indicating CPU-bound work.\n\n**Core metrics:** CPU 35011.0% \u00b7 Top wait *db file sequential read* (84.8% DB time) \u00b7 Buffer busy 0.0% \u00b7 Log file sync 0.0% \u00b7 Top SQL **gua0wyp1qmucq** (95.9% DB time) \u00b7 Physical reads 28/sec \u00b7 Buffer cache hit 90.0%\n\n**Health score dimensions:**\n- **CPU Utilization:** 35011.0% utilization (dimension score 0/100)\n- **Top Wait Event:** db file sequential read (84.8% DB time) (dimension score 0/100)\n- **Buffer Busy Waits:** 0.0% of DB time (dimension score 100/100)\n- **Log File Sync:** 0.0% DB time (dimension score 100/100)\n- **Top SQL Concentration:** SQL_ID gua0wyp1qmucq (95.9% DB time) (dimension score 0/100)\n- **I/O Pressure:** 28 physical reads/sec (dimension score 0/100)\n\n**Rule engine:** 6 findings (5 critical, 1 warning). Key signals:\n- **[CPU-001]** CPU utilization critical at 35011.0% (threshold 85%).\n- **[CPU-003]** Average Active Sessions 42164.3 exceeds critical threshold (16).\n- **[IO-003]** Top wait 'db file sequential read' at 84.8% \u2014 I/O bound workload.\n- **[SQL-003]** SQL_ID gua0wyp1qmucq correlates with high CPU (35011.0%) and DB time share.\n\n## Top 5 Actions\n\n1. Profile top CPU sessions and SQL; reduce parse/execute overhead and review runaway queries.\n2. Review connection storms, job scheduling, and consider resource manager limits.\n3. Tune SQL for index-friendly access; review storage subsystem and file layout.\n4. Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage.\n5. Prioritize wait event analysis; correlate with top SQL and session blocking chains.\n"
+  },
+  "waitEvents": [
+    {
+      "event": "db file sequential read",
+      "pctDbTime": 84.79
+    },
+    {
+      "event": "CPU time",
+      "pctDbTime": 11.2
+    },
+    {
+      "event": "db file parallel read",
+      "pctDbTime": 6.12
+    },
+    {
+      "event": "direct path read",
+      "pctDbTime": 2.05
+    },
+    {
+      "event": "direct path read temp",
+      "pctDbTime": 0.13
+    },
+    {
+      "event": "db file scattered read",
+      "pctDbTime": 0.06
+    },
+    {
+      "event": "ASM IO for non-blocking poll",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "SQL*Net break/reset to client",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "direct path write temp",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "Disk file operations I/O",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PGA memory operation",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Join ACK",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Slave Session Stats",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Signal ACK EXT",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS initialization",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "library cache: bucket mutex X",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: PS - contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: shared pool",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file sync",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "SQL*Net more data to client",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "cursor: pin S wait on X",
+      "pctDbTime": 0.0
+    }
+  ],
+  "topSql": [
+    {
+      "sqlId": "gua0wyp1qmucq",
+      "pctDbTime": 95.9,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "957qj183td0nf",
+      "pctDbTime": 27.31,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "4jpy7um3yvas8",
+      "pctDbTime": 19.57,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "8xwu96zjjvpbu",
+      "pctDbTime": 13.79,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "1gtahpfumr2kz",
+      "pctDbTime": 9.15,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "cvgtsfauu9b0z",
+      "pctDbTime": 8.24,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "1cpu1z2bcf8c0",
+      "pctDbTime": 8.08,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "11vs54q49y3p9",
+      "pctDbTime": 2.28,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "36wvpk4yuvzud",
+      "pctDbTime": 2.11,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "f78s5663tf0wh",
+      "pctDbTime": 1.55,
+      "executions": null,
+      "elapsedSec": null
+    }
+  ],
+  "recommendations": [
+    "Profile top CPU sessions and SQL; reduce parse/execute overhead and review runaway queries.",
+    "Review connection storms, job scheduling, and consider resource manager limits.",
+    "Tune SQL for index-friendly access; review storage subsystem and file layout.",
+    "Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage.",
+    "Prioritize wait event analysis; correlate with top SQL and session blocking chains."
+  ],
+  "rules": {
+    "rulesEvaluated": 21,
+    "rulesTriggered": 6,
+    "findings": [
+      {
+        "ruleId": "CPU-001",
+        "category": "CPU",
+        "message": "CPU utilization critical at 35011.0% (threshold 85%).",
+        "severity": "red",
+        "recommendation": "Profile top CPU sessions and SQL; reduce parse/execute overhead and review runaway queries."
+      },
+      {
+        "ruleId": "CPU-003",
+        "category": "Load",
+        "message": "Average Active Sessions 42164.3 exceeds critical threshold (16).",
+        "severity": "red",
+        "recommendation": "Review connection storms, job scheduling, and consider resource manager limits."
+      },
+      {
+        "ruleId": "IO-003",
+        "category": "I/O",
+        "message": "Top wait 'db file sequential read' at 84.8% \u2014 I/O bound workload.",
+        "severity": "red",
+        "recommendation": "Tune SQL for index-friendly access; review storage subsystem and file layout."
+      },
+      {
+        "ruleId": "WAIT-001",
+        "category": "Wait Events",
+        "message": "Top wait 'db file sequential read' dominates at 84.8% of database time.",
+        "severity": "red",
+        "recommendation": "Prioritize wait event analysis; correlate with top SQL and session blocking chains."
+      },
+      {
+        "ruleId": "SQL-001",
+        "category": "Top SQL",
+        "message": "SQL_ID gua0wyp1qmucq consumes 95.9% of database time \u2014 primary workload bottleneck.",
+        "severity": "red",
+        "recommendation": "Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage."
+      },
+      {
+        "ruleId": "SQL-003",
+        "category": "Top SQL",
+        "message": "SQL_ID gua0wyp1qmucq correlates with high CPU (35011.0%) and DB time share.",
+        "severity": "amber",
+        "recommendation": "Consider SQL rewrite, batching, or caching for repeated high-cost executions."
+      }
+    ]
+  },
+  "analysisId": "d00cf222-f04b-4c40-8d7b-0a0990e38422",
+  "fileName": "awr_report_1458_1459.html",
+  "createdAt": "2026-06-04T16:38:24.395218+00:00"
+}

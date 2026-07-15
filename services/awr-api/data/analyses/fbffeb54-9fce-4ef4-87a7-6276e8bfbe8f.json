@@ -1,0 +1,428 @@
+{
+  "success": true,
+  "warnings": [],
+  "extractionNotes": {
+    "database": "EPIPPRDC",
+    "instance": "epipprdc",
+    "elapsed_minutes": "60.0",
+    "cpu_usage_pct": "17.5%",
+    "top_wait": "CPU time (43.6%)",
+    "top_sql": "5252r76yv5wga (12.0%)",
+    "buffer_cache_hit": "90.0%"
+  },
+  "metrics": {
+    "databaseName": "EPIPPRDC",
+    "instanceName": "epipprdc",
+    "cpuUsagePct": 17.5,
+    "dbTimeAas": 3.1,
+    "dbTimeMinutes": 60.0,
+    "topWaitEvent": "CPU time",
+    "topWaitEventPct": 43.6,
+    "topSqlId": "5252r76yv5wga",
+    "topSqlDbTimePct": 12.01,
+    "bufferBusyWaitsPct": 0.0,
+    "activeSessionsAvg": 3.1,
+    "physicalReadsPerSec": 2619.6,
+    "logFileSyncPct": 0.89,
+    "bufferCacheHitRatioPct": 90.0,
+    "pgaAllocatedMb": 512.0,
+    "pgaTargetMb": 1024.0,
+    "sharedPoolFreePct": 15.0
+  },
+  "snapWindow": "60 min snapshot",
+  "health": {
+    "healthScore": 93,
+    "riskLevel": "Low",
+    "dimensions": [
+      {
+        "name": "CPU Utilization",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 20.0,
+        "detail": "17.5% utilization"
+      },
+      {
+        "name": "Top Wait Event",
+        "score": 67.4,
+        "penalty": 6.51,
+        "maxPenalty": 20.0,
+        "detail": "CPU time (43.6% DB time)"
+      },
+      {
+        "name": "Buffer Busy Waits",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 15.0,
+        "detail": "0.0% of DB time"
+      },
+      {
+        "name": "Log File Sync",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 12.0,
+        "detail": "0.9% DB time"
+      },
+      {
+        "name": "Top SQL Concentration",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 18.0,
+        "detail": "SQL_ID 5252r76yv5wga (12.0% DB time)"
+      },
+      {
+        "name": "I/O Pressure",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 15.0,
+        "detail": "2,620 physical reads/sec"
+      }
+    ]
+  },
+  "severity": {
+    "level": "Low",
+    "score": 15,
+    "confidence": 100
+  },
+  "bottleneck": {
+    "classification": "CPU Bottleneck",
+    "confidence": 96.8,
+    "rationale": "CPU Bottleneck (score 67). CPU utilization 17.5% with top wait profile indicating CPU-bound work.",
+    "scores": {
+      "CPU Bottleneck": 66.8,
+      "Random IO Bottleneck": 0.0,
+      "Sequential Scan Bottleneck": 0.0,
+      "Commit Bottleneck": 2.2,
+      "Concurrency Bottleneck": 0.0,
+      "Memory Bottleneck": 0.0
+    }
+  },
+  "summary": {
+    "businessSummary": "The database workload completed successfully but exhibited performance characteristics requiring DBA review.",
+    "technicalSummary": "Top wait event is 'CPU time' (43.6% DB time). Physical reads are approximately 2,620/sec. SQL_ID 5252r76yv5wga consumes 12.0% of DB time. Investigation should focus on execution plan efficiency, index selectivity, and storage latency.",
+    "topActions": [
+      "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+      "Profile top CPU-consuming SQL and sessions; validate connection pool and batch job scheduling.",
+      "Prioritize deep dive on SQL_ID 5252r76yv5wga (12.0% of database time).",
+      "Correlate top wait 'CPU time' with ASH/AWR segment and SQL statistics for root-cause validation.",
+      "Schedule follow-up AWR comparison after changes to confirm health score improvement."
+    ]
+  },
+  "waitEvents": [
+    {
+      "event": "CPU time",
+      "pctDbTime": 43.6
+    },
+    {
+      "event": "db file sequential read",
+      "pctDbTime": 37.15
+    },
+    {
+      "event": "db file parallel read",
+      "pctDbTime": 2.42
+    },
+    {
+      "event": "log file sync",
+      "pctDbTime": 0.89
+    },
+    {
+      "event": "db file scattered read",
+      "pctDbTime": 0.73
+    },
+    {
+      "event": "direct path read",
+      "pctDbTime": 0.47
+    },
+    {
+      "event": "direct path write temp",
+      "pctDbTime": 0.37
+    },
+    {
+      "event": "direct path read temp",
+      "pctDbTime": 0.35
+    },
+    {
+      "event": "latch: cache buffers chains",
+      "pctDbTime": 0.07
+    },
+    {
+      "event": "PGA memory operation",
+      "pctDbTime": 0.07
+    },
+    {
+      "event": "Disk file operations I/O",
+      "pctDbTime": 0.07
+    },
+    {
+      "event": "read by other session",
+      "pctDbTime": 0.05
+    },
+    {
+      "event": "latch: shared pool",
+      "pctDbTime": 0.05
+    },
+    {
+      "event": "cursor: pin S",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "SQL*Net message to client",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "ASM file metadata operation",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "SQL*Net more data to client",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "latch: redo allocation",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "direct path write",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "resmgr:internal state change",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "ASM IO for non-blocking poll",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Join ACK",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "SQL*Net more data from client",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Slave Session Stats",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "Sync ASM rebalance",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file switch completion",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Signal ACK EXT",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS initialization",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "library cache load lock",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "library cache: mutex X",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file switch (private strand flush incomplete)",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: PS - contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file sync: SCN ordering",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "SQL*Net break/reset to client",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "row cache mutex",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: KO - fast object checkpoint",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "ADR block file read",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS operation: query",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: TX - index contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "resmgr:cpu quantum",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS operation: action",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "asynch descriptor resize",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: cache buffers lru chain",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: In memory undo latch",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: DT - contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: enqueue hash chains",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "cursor: mutex S",
+      "pctDbTime": 0.0
+    }
+  ],
+  "topSql": [
+    {
+      "sqlId": "5252r76yv5wga",
+      "sqlText": "SELECT PIN, CPF_PROVIDER_TYPE , NASCO_PROVIDER_TYPE , CPF_SPECIALTY , CPF_SUB_SPECIALTY , NASCO_SPECIALTY , NASCO_SUB_SPECIALTY , NASCO_MA_PROVIDER_TYPE , NASCO_MA_SPECIALTY FROM V_BCBSM_NASCO_PROVSPEC_PRAC A WHERE PIN = :1 AND SPECIALTY_BEGIN_DATE = (SELECT MAX(SPECIALTY_BEGIN_DATE) FROM V_BCBSM_NASCO_PROVSPEC_PRAC WHERE A.PIN=PIN)",
+      "pctDbTime": 12.01,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "aqcj9x746xztu",
+      "sqlText": "SELECT DISTINCT EFFECTIVE_DATE_UDA FROM V_UDA_PRAC_PIN WHERE BCBSM_PIN_UDA = :B1",
+      "pctDbTime": 9.21,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "0ttdayudq6w55",
+      "sqlText": "DECLARE job BINARY_INTEGER := :job; next_date TIMESTAMP WITH TIME ZONE := :mydate; broken BOOLEAN := FALSE; job_name VARCHAR2(128) := :job_name; job_subname VARCHAR2(128) := :job_subname; job_owner VARCHAR2(128) := :job_owner; job_start TIMESTAMP WITH TIME ZONE := :job_start; job_scheduled_start TIMESTAMP WITH TIME ZONE := :job_scheduled_start; window_start TIMESTAMP WITH TIME ZONE := :window_start; window_end TIMESTAMP WITH TIME ZONE := :window_end; chain_id VARCHAR2(14) := :chainid; credential_owner VARCHAR2(128) := :credown; credential_name VARCHAR2(128) := :crednam; destination_owner VARCHAR2(128) := :destown; destination_name VARCHAR2(128) := :destnam; job_dest_id varchar2(14) := :jdestid; log_id number := :log_id; BEGIN dbms_refresh.refresh('\"PORTICO\".\"M_BCBSMI_NET_ADQ_PRAC\"'); :mydate := next_date; IF brok en THEN :b := 1; ELSE :b := 0; END IF; END;",
+      "pctDbTime": 7.22,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "b97dkb86q2gaf",
+      "sqlText": "/* MV_REFRESH (INS) */INSERT /*+ BYPASS_RECURSIVE_CHECK */ INTO \"PORTICO\".\"M_BCBSMI_NET_ADQ_PRAC\" SELECT * FROM PORTICO.V_BCBSMI_NET_ADQ_PRAC",
+      "pctDbTime": 7.14,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "bnm4gqdxktg94",
+      "sqlText": "SELECT STATE_UDA FROM PORTICO.V_UDA_PRAC_STATE_LICENSE WHERE BCBSM_LICENSE_NUMBER_UDA = :1",
+      "pctDbTime": 7.11,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "15xn3jk4a3vz6",
+      "sqlText": "SELECT pa.id, t.metatype, f.fieldname, pv.value, pv.id, f.datatype FROM pp_prov_attrib pa, pp_prov_attrib_values pv, fmg_attrib_fields f, fmg_attrib_types t WHERE pv.prov_attribute_id = pa.id AND pv.field_id = f.id AND t.id = pa.attribute_id AND pa.prov_id = :1 ORDER BY pa.id",
+      "pctDbTime": 6.5,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "baycv0bk0psuj",
+      "sqlText": "SELECT distinct pnc.net_id, pnla.network_status_uda status, pnlc.start_date, pnlc.end_date+1 end_date, pnla.ID as hist_id, pnc.id as net_cycle_hist_id FROM pp_prac_net_cycle pnc, pp_prac_net_loc_cycle pnlc, v_uda_prac_net_loc_additional pnla, fmg_codes c1, fmg_codes c2 WHERE c1.type = 'IKA_NON_CON_NETS' AND c2.type = 'IKA_CON_NETS' AND (trunc(pnc.start_date) > trunc(to_date('01/01/2007', 'mm/dd/yyyy')) OR trunc(pnc.end_date) > trunc(to_date('01/01/2007', 'mm/dd/yyyy'))) AND ((trunc(pnc.start_date) != trunc(pnc.end_date) and pnc.net_id = c1.code) or pnc.net_id = c2.code) AND pnlc.prov_id = :1 AND pnc.prac_id = :2 AND pnlc.prac_net_cycle_id = pnc.id AND pnlc.prac_id = pnc.prac_id AND pnlc.id = pnla.prac_net_loc_cycle_id",
+      "pctDbTime": 6.12,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "8z2d8mfn8hmck",
+      "sqlText": "SELECT PIN, ' ' TIER_NUMBER, AUTHORIZATIONTYPE AUTHORIZATION_TYPE , AUTHORIZATIONNUMBER AUTHORIZATION_NUMBER , EFFECTIVEDATE EFFECTIVE_DATE , ENDDATE END_DATE FROM V_BCBSM_NASCO_PSPCAUTH_PRAC A WHERE PIN = :1 AND AUTHORIZATIONTYPE IN ('R', 'V') AND EFFECTIVEDATE = ( SELECT MAX(EFFECTIVEDATE) FROM V_BCBSM_NASCO_PSPCAUTH_PRAC B WHERE A.PIN=B.PIN AND A.AUTHORIZATIONTYPE = B.AUTHORIZATIONTYPE ) UNION ALL SELECT * FROM( SELECT PIN, ' ' , AUTHORIZATIONTYPE, AUTHORIZATIONNUMBER , EFFECTIVEDATE, ENDDATE FROM V_BCBSM_NASCO_PSPCAUTH_PRAC A WHERE PIN = :2 AND AUTHORIZATIONTYPE IN ('P', 'D' , 'M') ORDER BY AUTHORIZATIONTYPE, NLSSORT(AUTHORIZATIONNUMBER, 'NLS_SORT=WEST_EUROPEA N') ) UNION ALL SELECT * FROM ( SELECT PIN , SUBSTR(AUTHORIZATIONNUMBER, 2, 1) , AUTHORIZATIONTYPE , AUTHORIZATIONNUMBER , EFFECTIVEDATE , ENDDATE FROM V_BCBSM_NASCO_PSPCAUTH_PRAC WHERE PIN = :3 AND AUTHORIZATIONTYPE='G' ORDER BY SUBSTR(AUTHORIZATIONNUMBER, 2, 1) , EFFECTIVEDATE DESC)",
+      "pctDbTime": 4.45,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "d7486w7buz2sf",
+      "sqlText": "SELECT DISTINCT T.TYPE_DS, S.CODE, -1 , -1 FROM PP_PROV P , PP_PROV_TYPE T , PP_SPEC S WHERE T.ID = P.PROV_TYPE_ID AND S.ID = P.SPEC_ID AND P.ID = :1 UNION SELECT NVL(V.PORTICO_TYPE_UDA, S.TYPE_DS), NVL(V.PORTICO_SPEC_UDA, S.SPTY_CD), S.SEQ_NUM, V.ID FROM V_UDA_PROV_PIN_ADD V FULL OUTER JOIN BCBSMI_MAIKA_ADDL_TYPE_ID S ON S.PROV_ID = V.PROV_ID AND S.TYPE_DS = V.PORTICO_TYPE_UDA AND S.SPTY_CD = V.PORTICO_SPEC_UDA WHERE TRUNC(SYSDATE) BETWEEN NVL(V.EFFECTIVE_DATE_UDA, TRUNC(SYSDATE)) AND NVL(V.TERMINATION_DATE_UDA, TRUNC(SYSDATE)) AND V.ID IS NOT NULL AND NVL(V.PROV_ID, S.PROV_ID) = :2 UNION SELECT A.TYPE_DS, A.CODE, S.SEQ_NUM, 1 FROM (SELECT T.TYPE_DS, VM.MAP_VALUE AS CODE, PP.ID, V.PROV_DESIG_UDA FROM V_UDA_PROV_DESIGNATION V, PP_PROV PP, PP_VALUE_MAP VM, PP_PROV_TYPE T WHERE TRUNC(SYSDATE) BETWEEN NVL(V.EFFECTIVE_DATE_UDA, TRUNC(SYSDATE)) AND NVL(V.END_DATE_UDA, TRUNC(SYSDATE)) AND PP.ID = V.PROV_ID AND V.PROV_DESIG_UDA = VM.FMG_CODE AND VM.MAP_TYPE = 'MAIKA_DESIG_MAP' AND PP.PROV_TYPE_ID = T.ID) A FULL OUTER JOIN BCBSMI_MAIKA_ADDL_TYPE_ID S ON S.PROV_ID = A.ID AND S.TYPE_DS = A.TYPE_DS AND S.SPTY_CD = A.CODE WHERE A.PROV_DESIG_UDA IS NOT NULL AND NVL(A.ID, S.PROV_ID) = :3",
+      "pctDbTime": 3.83,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "9cga9pvbupr57",
+      "sqlText": "SELECT pa.id, t.metatype, f.fieldname, pv.value, pv.id, f.datatype FROM pp_prov_loc_attrib pa, pp_prov_loc_attrib_values pv, fmg_attrib_fields f, fmg_attrib_types t WHERE pv.prov_loc_attribute_id = pa.id AND pv.field_id = f.id AND t.id = pa.attribute_id AND pa.loc_id = :1 AND pa.prov_id = :2 ORDER BY pa.id",
+      "pctDbTime": 2.72,
+      "executions": null,
+      "elapsedSec": null
+    }
+  ],
+  "recommendations": [
+    "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+    "Profile top CPU-consuming SQL and sessions; validate connection pool and batch job scheduling.",
+    "Prioritize deep dive on SQL_ID 5252r76yv5wga (12.0% of database time).",
+    "Correlate top wait 'CPU time' with ASH/AWR segment and SQL statistics for root-cause validation.",
+    "Schedule follow-up AWR comparison after changes to confirm health score improvement."
+  ],
+  "intelligent_finding": {
+    "title": "CPU Bottleneck",
+    "finding": "CPU utilization reached 17.5%.",
+    "likelyCause": "High SQL execution volume or inefficient execution plans.",
+    "evidence": [
+      "CPU Usage: 17.5%",
+      "AAS: 3.10",
+      "Top SQL: 5252r76yv5wga",
+      "Top SQL Contribution: 12.0%"
+    ],
+    "businessImpact": "Database throughput may be constrained by CPU saturation.",
+    "recommendation": "Review CPU-intensive SQL statements and execution plans."
+  },
+  "sql_insight": {
+    "sql_id": "5252r76yv5wga",
+    "severity": "Low",
+    "title": "Dominant SQL Statement",
+    "finding": "SQL_ID 5252r76yv5wga contributes 12.0% of total database time.",
+    "likely_cause": "CPU intensive SQL execution.",
+    "business_impact": "A single SQL statement dominates workload and may impact response times.",
+    "estimated_gain": "5-15%",
+    "evidence": [
+      "SQL_ID: 5252r76yv5wga",
+      "DB Time Contribution: 12.0%",
+      "Top Wait Event: CPU time"
+    ],
+    "recommendation": [
+      "Review execution plan",
+      "Validate indexing strategy",
+      "Check stale optimizer statistics",
+      "Evaluate SQL rewrite opportunities"
+    ]
+  },
+  "rules": {
+    "rulesEvaluated": 21,
+    "rulesTriggered": 1,
+    "findings": [
+      {
+        "ruleId": "WAIT-001",
+        "category": "Wait Events",
+        "message": "Top wait 'CPU time' dominates at 43.6% of database time.",
+        "severity": "red",
+        "recommendation": "Prioritize wait event analysis; correlate with top SQL and session blocking chains."
+      }
+    ]
+  },
+  "analysisId": "fbffeb54-9fce-4ef4-87a7-6276e8bfbe8f",
+  "fileName": "awr_report_14379_14380.html",
+  "createdAt": "2026-06-10T04:30:55.011696+00:00"
+}

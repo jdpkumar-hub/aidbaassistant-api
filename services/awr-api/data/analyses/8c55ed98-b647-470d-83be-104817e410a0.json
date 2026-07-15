@@ -1,0 +1,309 @@
+{
+  "success": true,
+  "warnings": [],
+  "extractionNotes": {
+    "database": "PROVDV8C",
+    "instance": "provdv8c",
+    "elapsed_minutes": "60.0",
+    "cpu_usage_pct": "5.0%",
+    "top_wait": "db file sequential read (84.8%)",
+    "top_sql": "gua0wyp1qmucq (95.9%)",
+    "buffer_cache_hit": "90.0%"
+  },
+  "metrics": {
+    "databaseName": "PROVDV8C",
+    "instanceName": "provdv8c",
+    "cpuUsagePct": 5.0,
+    "dbTimeAas": 1.0,
+    "dbTimeMinutes": 60.0,
+    "topWaitEvent": "db file sequential read",
+    "topWaitEventPct": 84.8,
+    "topSqlId": "gua0wyp1qmucq",
+    "topSqlDbTimePct": 95.9,
+    "bufferBusyWaitsPct": 0.0,
+    "activeSessionsAvg": 1.0,
+    "physicalReadsPerSec": 3777.2,
+    "logFileSyncPct": 0.0,
+    "bufferCacheHitRatioPct": 90.0,
+    "pgaAllocatedMb": 512.0,
+    "pgaTargetMb": 1024.0,
+    "sharedPoolFreePct": 15.0
+  },
+  "snapWindow": "60 min snapshot",
+  "health": {
+    "healthScore": 47,
+    "riskLevel": "High",
+    "dimensions": [
+      {
+        "name": "CPU Utilization",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 20.0,
+        "detail": "5.0% utilization"
+      },
+      {
+        "name": "Top Wait Event",
+        "score": 0.0,
+        "penalty": 20.0,
+        "maxPenalty": 20.0,
+        "detail": "db file sequential read (84.8% DB time)"
+      },
+      {
+        "name": "Buffer Busy Waits",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 15.0,
+        "detail": "0.0% of DB time"
+      },
+      {
+        "name": "Log File Sync",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 12.0,
+        "detail": "0.0% DB time"
+      },
+      {
+        "name": "Top SQL Concentration",
+        "score": 0.0,
+        "penalty": 18.0,
+        "maxPenalty": 18.0,
+        "detail": "SQL_ID gua0wyp1qmucq (95.9% DB time)"
+      },
+      {
+        "name": "I/O Pressure",
+        "score": 0.0,
+        "penalty": 15.0,
+        "maxPenalty": 15.0,
+        "detail": "3,777 physical reads/sec"
+      }
+    ]
+  },
+  "severity": {
+    "level": "High",
+    "score": 60,
+    "confidence": 100
+  },
+  "bottleneck": {
+    "classification": "Random IO Bottleneck",
+    "confidence": 100.0,
+    "rationale": "Random IO Bottleneck (score 103). Top wait 'db file sequential read' (84.8% DB time) and 3,777 physical reads/sec \u2014 typical of index/single-block I/O.",
+    "scores": {
+      "CPU Bottleneck": 0.0,
+      "Random IO Bottleneck": 102.9,
+      "Sequential Scan Bottleneck": 0.0,
+      "Commit Bottleneck": 0.0,
+      "Concurrency Bottleneck": 0.0,
+      "Memory Bottleneck": 0.0
+    }
+  },
+  "summary": {
+    "businessSummary": "The database is experiencing elevated transaction latency driven by random I/O activity. Approximately 84.8% of database time was spent waiting on 'db file sequential read'. A single SQL statement contributes 95.9% of database activity, indicating a concentrated performance bottleneck.",
+    "technicalSummary": "Top wait event is 'db file sequential read' (84.8% DB time). Physical reads are approximately 3,777/sec. SQL_ID gua0wyp1qmucq consumes 95.9% of DB time. Investigation should focus on execution plan efficiency, index selectivity, and storage latency.",
+    "topActions": [
+      "Tune SQL for index-friendly access; review storage subsystem and file layout.",
+      "Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage.",
+      "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+      "Tune top SQL for index-friendly access; review execution plans and missing indexes on hot objects.",
+      "Prioritize deep dive on SQL_ID gua0wyp1qmucq (95.9% of database time)."
+    ]
+  },
+  "waitEvents": [
+    {
+      "event": "db file sequential read",
+      "pctDbTime": 84.79
+    },
+    {
+      "event": "CPU time",
+      "pctDbTime": 11.2
+    },
+    {
+      "event": "db file parallel read",
+      "pctDbTime": 6.12
+    },
+    {
+      "event": "direct path read",
+      "pctDbTime": 2.05
+    },
+    {
+      "event": "direct path read temp",
+      "pctDbTime": 0.13
+    },
+    {
+      "event": "db file scattered read",
+      "pctDbTime": 0.06
+    },
+    {
+      "event": "ASM IO for non-blocking poll",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "SQL*Net break/reset to client",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "direct path write temp",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "Disk file operations I/O",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PGA memory operation",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Join ACK",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Slave Session Stats",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Signal ACK EXT",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS initialization",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "library cache: bucket mutex X",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: PS - contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: shared pool",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file sync",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "SQL*Net more data to client",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "cursor: pin S wait on X",
+      "pctDbTime": 0.0
+    }
+  ],
+  "topSql": [
+    {
+      "sqlId": "gua0wyp1qmucq",
+      "pctDbTime": 95.9,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "957qj183td0nf",
+      "pctDbTime": 27.31,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "4jpy7um3yvas8",
+      "pctDbTime": 19.57,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "8xwu96zjjvpbu",
+      "pctDbTime": 13.79,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "1gtahpfumr2kz",
+      "pctDbTime": 9.15,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "cvgtsfauu9b0z",
+      "pctDbTime": 8.24,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "1cpu1z2bcf8c0",
+      "pctDbTime": 8.08,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "11vs54q49y3p9",
+      "pctDbTime": 2.28,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "36wvpk4yuvzud",
+      "pctDbTime": 2.11,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "f78s5663tf0wh",
+      "pctDbTime": 1.55,
+      "executions": null,
+      "elapsedSec": null
+    }
+  ],
+  "recommendations": [
+    "Tune SQL for index-friendly access; review storage subsystem and file layout.",
+    "Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage.",
+    "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+    "Tune top SQL for index-friendly access; review execution plans and missing indexes on hot objects.",
+    "Prioritize deep dive on SQL_ID gua0wyp1qmucq (95.9% of database time)."
+  ],
+  "intelligent_finding": {
+    "title": "Random IO Bottleneck",
+    "finding": "84.8% of database time was spent waiting on 'db file sequential read'.",
+    "likelyCause": "Single-block index lookups are dominating database activity.",
+    "evidence": [
+      "Top Wait Event: db file sequential read",
+      "Wait Contribution: 84.8%",
+      "Physical Reads/sec: 3,777",
+      "Top SQL: gua0wyp1qmucq",
+      "Top SQL Contribution: 95.9%"
+    ],
+    "businessImpact": "Transaction response times may increase due to excessive index-driven I/O.",
+    "recommendation": "Review SQL_ID gua0wyp1qmucq, execution plan, index selectivity, and storage latency."
+  },
+  "rules": {
+    "rulesEvaluated": 21,
+    "rulesTriggered": 3,
+    "findings": [
+      {
+        "ruleId": "IO-003",
+        "category": "I/O",
+        "message": "Top wait 'db file sequential read' at 84.8% \u2014 I/O bound workload.",
+        "severity": "red",
+        "recommendation": "Tune SQL for index-friendly access; review storage subsystem and file layout."
+      },
+      {
+        "ruleId": "WAIT-001",
+        "category": "Wait Events",
+        "message": "Top wait 'db file sequential read' dominates at 84.8% of database time.",
+        "severity": "red",
+        "recommendation": "Prioritize wait event analysis; correlate with top SQL and session blocking chains."
+      },
+      {
+        "ruleId": "SQL-001",
+        "category": "Top SQL",
+        "message": "SQL_ID gua0wyp1qmucq consumes 95.9% of database time \u2014 primary workload bottleneck.",
+        "severity": "red",
+        "recommendation": "Tune SQL_ID gua0wyp1qmucq: review execution plan, indexes, and bind variable usage."
+      }
+    ]
+  },
+  "analysisId": "8c55ed98-b647-470d-83be-104817e410a0",
+  "fileName": "awr_report_1458_1459.html",
+  "createdAt": "2026-06-06T05:34:16.266093+00:00"
+}

@@ -3,7 +3,6 @@ Enterprise Oracle AWR Performance Report — PDF generator (ReportLab).
 
 AI DBA Assistant branded multi-section AWR assessment with dashboard styling.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -70,6 +69,19 @@ class RuleFindingRow:
     finding: str
     recommendation: str
 
+@dataclass
+class AiFindingRow:
+    severity: str
+    issue: str
+    recommendation: str
+
+
+@dataclass
+class RecommendedIndexRow:
+    table_name: str
+    index_name: str
+    statement: str
+    rationale: str
 
 @dataclass
 class AwrReportData:
@@ -91,7 +103,24 @@ class AwrReportData:
     wait_events: list[WaitEventRow] = field(default_factory=list)
     top_sql: list[TopSqlRow] = field(default_factory=list)
     recommendations: list[str] = field(default_factory=list)
+    severity: str = ""
+    primary_bottleneck: str = ""
+    confidence_score: float = 0.0
+    optimization_potential: str = ""
 
+    cpu_utilization: float = 0.0
+    aas: float = 0.0
+    top_sql_db_time_pct: float = 0.0
+    buffer_cache_hit_ratio: float = 0.0
+    physical_reads_per_sec: float = 0.0
+    log_file_sync_pct: float = 0.0
+
+    ai_findings: list = field(default_factory=list)
+
+    optimized_sql: str = ""
+    sql_impact_pct: float = 0.0
+
+    recommended_indexes: list = field(default_factory=list)
 
 def _risk_color(level: RiskLevel) -> colors.Color:
     return {"Low": GREEN, "Medium": AMBER, "High": RED}[level]
@@ -109,6 +138,20 @@ def _color_hex(c: colors.Color) -> str:
     raw = c.hexval() if hasattr(c, "hexval") else "0x334155"
     return "#" + raw.replace("0x", "")[:6]
 
+def _assessment_summary(data, styles):
+    rows = [
+        ["Health Score", str(data.health_score)],
+        ["Severity", data.severity],
+        ["Primary Bottleneck", data.primary_bottleneck],
+        ["Confidence", f"{data.confidence_score:.1f}%"],
+    ]
+
+    table = Table(rows, colWidths=[2.5*inch, 3*inch])
+    table.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1),1,colors.black),
+        ("BACKGROUND",(0,0),(0,-1),LIGHT_BG)
+    ]))
+    return table
 
 def _build_styles():
     base = getSampleStyleSheet()
@@ -371,6 +414,49 @@ def _risk_classification_block(data: AwrReportData, styles: dict) -> list:
         Paragraph(rationale, styles["body"]),
     ]
 
+def _executive_kpi_table(data, styles):
+
+    top_wait = (
+        data.wait_events[0].wait_event
+        if data.wait_events
+        else "N/A"
+    )
+
+    top_sql = (
+        data.top_sql[0].sql_id
+        if data.top_sql
+        else "N/A"
+    )
+    
+    rows = [
+        [
+            f"Health Score\n{data.health_score}",
+            f"Risk Level\n{data.risk_level}",
+            f"Top Wait\n{top_wait}",
+        ],
+        [
+            f"Bottleneck\n{data.primary_bottleneck}",
+            f"Confidence\n{data.confidence_score:.1f}%",
+            f"Top SQL\n{top_sql}",
+        ],
+    ]
+
+    table = Table(
+        rows,
+        colWidths=[2.1 * inch, 2.1 * inch, 2.1 * inch]
+    )
+
+    table.setStyle(
+        TableStyle([
+            ("GRID", (0,0), (-1,-1), 1, colors.white),
+            ("BACKGROUND", (0,0), (-1,-1), NAVY),
+            ("TEXTCOLOR", (0,0), (-1,-1), colors.white),
+            ("ALIGN", (0,0), (-1,-1), "CENTER"),
+            ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ])
+    )
+
+    return table
 
 def _wait_events_table(rows: list[WaitEventRow]) -> Table:
     data = [["Wait Event", "% DB Time", "Waits", "Severity"]] + [
@@ -509,6 +595,15 @@ def generate_awr_pdf(data: AwrReportData, output_path: str | Path) -> Path:
     )
     story.append(meta)
     story.append(Spacer(1, 0.2 * inch))
+    
+    story.extend(_section_header(
+        "Assessment At A Glance",
+        styles
+    ))
+
+    story.append(
+        _assessment_summary(data, styles)
+    )
 
     # Executive Summary
     story.extend(_section_header("Executive Summary", styles))
@@ -518,6 +613,50 @@ def generate_awr_pdf(data: AwrReportData, output_path: str | Path) -> Path:
         "tuning opportunities prior to the next business peak."
     )
     story.append(Paragraph(summary, styles["body"]))
+
+    # ===========================
+    # Executive Dashboard
+    # ===========================
+
+    story.extend(
+        _section_header(
+            "Executive Dashboard",
+            styles
+        )
+    )
+
+    story.append(
+        _executive_kpi_table(
+            data,
+            styles
+        )
+    )
+
+
+    # ===========================
+    # Bottleneck Analysis
+    # ===========================
+
+    story.extend(
+        _section_header(
+            "Bottleneck Analysis",
+            styles
+        )
+    )
+
+    story.append(
+        _bottleneck_summary(
+            data,
+            styles
+        )
+    )
+
+    story.append(
+        Paragraph(
+            data.risk_rationale,
+            styles["body"]
+        )
+    )
 
     # Health Score Card
     story.extend(_section_header("Health Score Card", styles))
@@ -567,7 +706,51 @@ def generate_awr_pdf(data: AwrReportData, output_path: str | Path) -> Path:
         TopSqlRow("3m4n8p", "9.1%", "22,100", "1,450", "REPORT_GEN"),
     ]
     story.append(_top_sql_table(sql_rows))
+    story.extend(
+        _section_header(
+            "Executive Insights",
+            styles
+        )
+    )
 
+    story.extend(
+        _ai_findings_cards(
+            data.ai_findings,
+            styles
+        )
+    )
+    
+    if data.optimized_sql:
+
+        story.extend(
+            _section_header(
+                "SQL Optimization",
+                styles
+            )
+        )
+
+        story.extend(
+            _sql_tuning_block(
+                data,
+                styles
+            )
+        )
+
+    if data.recommended_indexes:
+
+        story.extend(
+            _section_header(
+                "Recommended Indexes",
+                styles
+            )
+        )
+
+        story.append(
+            _recommended_indexes_table(
+                data.recommended_indexes
+            )
+        ) 
+        
     # Recommendations
     story.extend(_section_header("Recommendations", styles))
     recs = data.recommendations or [
@@ -589,7 +772,152 @@ def generate_awr_pdf(data: AwrReportData, output_path: str | Path) -> Path:
     )
     return output_path
 
+def _sql_tuning_block(data, styles):
 
+    content = []
+
+    content.append(
+        Paragraph(
+            f"<b>SQL Impact:</b> {data.sql_impact_pct:.1f}%",
+            styles["body"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            "<b>Optimized SQL</b>",
+            styles["section"]
+        )
+    )
+
+    content.append(
+        Paragraph(
+            f"<font face='Courier'>{data.optimized_sql}</font>",
+            styles["body"]
+        )
+    )
+
+    return content
+
+def _bottleneck_summary(data, styles):
+
+    rows = [
+        ["Primary Bottleneck", data.primary_bottleneck],
+        ["Confidence", f"{data.confidence_score:.1f}%"],
+        ["Risk Level", data.risk_level],
+    ]
+
+    table = Table(rows, colWidths=[2.0 * inch, 4.0 * inch])
+
+    table.setStyle(
+        _dashboard_table_style(NAVY)
+    )
+
+    return table
+    
+def _recommended_indexes_table(indexes):
+
+    rows = [[
+        "Table",
+        "Index Name",
+        "Statement",
+        "Rationale"
+    ]]
+
+    for idx in indexes:
+
+        rows.append([
+            getattr(idx, "table_name", ""),
+            getattr(idx, "index_name", ""),
+            getattr(idx, "statement", ""),
+            getattr(idx, "rationale", "")
+        ])
+
+    table = Table(
+        rows,
+        colWidths=[
+            1.2 * inch,
+            1.3 * inch,
+            2.3 * inch,
+            1.7 * inch
+        ]
+    )
+
+    table.setStyle(
+        _dashboard_table_style(
+            NAVY
+        )
+    )
+
+    return table
+
+def _ai_findings_cards(findings, styles):
+
+    content = []
+
+    for finding in findings:
+
+        card = Table(
+            [[                
+                Paragraph(
+                    f"""
+                    <b>Severity:</b> {finding.severity}<br/><br/>
+                    <b>Issue:</b><br/>
+                    {finding.issue}<br/><br/>
+                    <b>Recommendation:</b><br/>
+                    {finding.recommendation}
+                    """,
+                    styles["body"]
+                )                
+             ]],
+            colWidths=[6.8 * inch]
+        )
+
+        card.setStyle(
+            TableStyle([
+                ("BACKGROUND", (0,0), (-1,-1), colors.whitesmoke),
+                ("BOX", (0,0), (-1,-1), 1, colors.grey),
+                ("PADDING", (0,0), (-1,-1), 8),
+            ])
+        )
+
+        content.append(card)
+        content.append(Spacer(1, 10))
+
+    return content
+    
+def _ai_findings_table(findings):
+
+    rows = [["Severity", "Issue", "Recommendation"]]
+
+    for f in findings:
+
+        rows.append([
+            getattr(f, "severity", "Unknown"),
+            getattr(f, "issue", ""),
+            getattr(f, "recommendation", "")
+        ])
+
+    table = Table(
+        rows,
+        colWidths=[
+            0.6 * inch,
+            2.4 * inch,
+            3.6 * inch
+        ]
+    )
+
+    table.setStyle(
+        _dashboard_table_style(
+            NAVY_MID
+        )
+    )
+
+    return table
+    
+    
+    
+    
 def awr_report_from_rules(metrics=None) -> AwrReportData:
     """Build PDF report data from rule engine output."""
     from awr_rules import demo_awr_metrics, run_awr_rules

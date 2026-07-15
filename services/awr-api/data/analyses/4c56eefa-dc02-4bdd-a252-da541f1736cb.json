@@ -1,0 +1,418 @@
+{
+  "success": true,
+  "warnings": [],
+  "extractionNotes": {
+    "database": "EPIPPRDC",
+    "instance": "epipprdc",
+    "elapsed_minutes": "60.0",
+    "cpu_usage_pct": "17.5%",
+    "top_wait": "CPU time (43.6%)",
+    "top_sql": "5252r76yv5wga (12.0%)",
+    "buffer_cache_hit": "90.0%"
+  },
+  "metrics": {
+    "databaseName": "EPIPPRDC",
+    "instanceName": "epipprdc",
+    "cpuUsagePct": 17.5,
+    "dbTimeAas": 3.1,
+    "dbTimeMinutes": 60.0,
+    "topWaitEvent": "CPU time",
+    "topWaitEventPct": 43.6,
+    "topSqlId": "5252r76yv5wga",
+    "topSqlDbTimePct": 12.01,
+    "bufferBusyWaitsPct": 0.0,
+    "activeSessionsAvg": 3.1,
+    "physicalReadsPerSec": 2619.6,
+    "logFileSyncPct": 0.89,
+    "bufferCacheHitRatioPct": 90.0,
+    "pgaAllocatedMb": 512.0,
+    "pgaTargetMb": 1024.0,
+    "sharedPoolFreePct": 15.0
+  },
+  "snapWindow": "60 min snapshot",
+  "health": {
+    "healthScore": 93,
+    "riskLevel": "Low",
+    "dimensions": [
+      {
+        "name": "CPU Utilization",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 20.0,
+        "detail": "17.5% utilization"
+      },
+      {
+        "name": "Top Wait Event",
+        "score": 67.4,
+        "penalty": 6.51,
+        "maxPenalty": 20.0,
+        "detail": "CPU time (43.6% DB time)"
+      },
+      {
+        "name": "Buffer Busy Waits",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 15.0,
+        "detail": "0.0% of DB time"
+      },
+      {
+        "name": "Log File Sync",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 12.0,
+        "detail": "0.9% DB time"
+      },
+      {
+        "name": "Top SQL Concentration",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 18.0,
+        "detail": "SQL_ID 5252r76yv5wga (12.0% DB time)"
+      },
+      {
+        "name": "I/O Pressure",
+        "score": 100.0,
+        "penalty": 0.0,
+        "maxPenalty": 15.0,
+        "detail": "2,620 physical reads/sec"
+      }
+    ]
+  },
+  "severity": {
+    "level": "Low",
+    "score": 15,
+    "confidence": 100
+  },
+  "bottleneck": {
+    "classification": "CPU Bottleneck",
+    "confidence": 96.8,
+    "rationale": "CPU Bottleneck (score 67). CPU utilization 17.5% with top wait profile indicating CPU-bound work.",
+    "scores": {
+      "CPU Bottleneck": 66.8,
+      "Random IO Bottleneck": 0.0,
+      "Sequential Scan Bottleneck": 0.0,
+      "Commit Bottleneck": 2.2,
+      "Concurrency Bottleneck": 0.0,
+      "Memory Bottleneck": 0.0
+    }
+  },
+  "summary": {
+    "businessSummary": "The database workload completed successfully but exhibited performance characteristics requiring DBA review.",
+    "technicalSummary": "Top wait event is 'CPU time' (43.6% DB time). Physical reads are approximately 2,620/sec. SQL_ID 5252r76yv5wga consumes 12.0% of DB time. Investigation should focus on execution plan efficiency, index selectivity, and storage latency.",
+    "topActions": [
+      "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+      "Profile top CPU-consuming SQL and sessions; validate connection pool and batch job scheduling.",
+      "Prioritize deep dive on SQL_ID 5252r76yv5wga (12.0% of database time).",
+      "Correlate top wait 'CPU time' with ASH/AWR segment and SQL statistics for root-cause validation.",
+      "Schedule follow-up AWR comparison after changes to confirm health score improvement."
+    ]
+  },
+  "waitEvents": [
+    {
+      "event": "CPU time",
+      "pctDbTime": 43.6
+    },
+    {
+      "event": "db file sequential read",
+      "pctDbTime": 37.15
+    },
+    {
+      "event": "db file parallel read",
+      "pctDbTime": 2.42
+    },
+    {
+      "event": "log file sync",
+      "pctDbTime": 0.89
+    },
+    {
+      "event": "db file scattered read",
+      "pctDbTime": 0.73
+    },
+    {
+      "event": "direct path read",
+      "pctDbTime": 0.47
+    },
+    {
+      "event": "direct path write temp",
+      "pctDbTime": 0.37
+    },
+    {
+      "event": "direct path read temp",
+      "pctDbTime": 0.35
+    },
+    {
+      "event": "latch: cache buffers chains",
+      "pctDbTime": 0.07
+    },
+    {
+      "event": "PGA memory operation",
+      "pctDbTime": 0.07
+    },
+    {
+      "event": "Disk file operations I/O",
+      "pctDbTime": 0.07
+    },
+    {
+      "event": "read by other session",
+      "pctDbTime": 0.05
+    },
+    {
+      "event": "latch: shared pool",
+      "pctDbTime": 0.05
+    },
+    {
+      "event": "cursor: pin S",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "SQL*Net message to client",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "ASM file metadata operation",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "SQL*Net more data to client",
+      "pctDbTime": 0.02
+    },
+    {
+      "event": "latch: redo allocation",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "direct path write",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "resmgr:internal state change",
+      "pctDbTime": 0.01
+    },
+    {
+      "event": "ASM IO for non-blocking poll",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Join ACK",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "SQL*Net more data from client",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Slave Session Stats",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "Sync ASM rebalance",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file switch completion",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "PX Deq: Signal ACK EXT",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS initialization",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "library cache load lock",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "library cache: mutex X",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file switch (private strand flush incomplete)",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: PS - contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "log file sync: SCN ordering",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "SQL*Net break/reset to client",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "row cache mutex",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: KO - fast object checkpoint",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "ADR block file read",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS operation: query",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: TX - index contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "resmgr:cpu quantum",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "CSS operation: action",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "asynch descriptor resize",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: cache buffers lru chain",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: In memory undo latch",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "enq: DT - contention",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "latch: enqueue hash chains",
+      "pctDbTime": 0.0
+    },
+    {
+      "event": "cursor: mutex S",
+      "pctDbTime": 0.0
+    }
+  ],
+  "topSql": [
+    {
+      "sqlId": "5252r76yv5wga",
+      "pctDbTime": 12.01,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "aqcj9x746xztu",
+      "pctDbTime": 9.21,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "0ttdayudq6w55",
+      "pctDbTime": 7.22,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "b97dkb86q2gaf",
+      "pctDbTime": 7.14,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "bnm4gqdxktg94",
+      "pctDbTime": 7.11,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "15xn3jk4a3vz6",
+      "pctDbTime": 6.5,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "baycv0bk0psuj",
+      "pctDbTime": 6.12,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "8z2d8mfn8hmck",
+      "pctDbTime": 4.45,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "d7486w7buz2sf",
+      "pctDbTime": 3.83,
+      "executions": null,
+      "elapsedSec": null
+    },
+    {
+      "sqlId": "9cga9pvbupr57",
+      "pctDbTime": 2.72,
+      "executions": null,
+      "elapsedSec": null
+    }
+  ],
+  "recommendations": [
+    "Prioritize wait event analysis; correlate with top SQL and session blocking chains.",
+    "Profile top CPU-consuming SQL and sessions; validate connection pool and batch job scheduling.",
+    "Prioritize deep dive on SQL_ID 5252r76yv5wga (12.0% of database time).",
+    "Correlate top wait 'CPU time' with ASH/AWR segment and SQL statistics for root-cause validation.",
+    "Schedule follow-up AWR comparison after changes to confirm health score improvement."
+  ],
+  "intelligent_finding": {
+    "title": "CPU Bottleneck",
+    "finding": "CPU utilization reached 17.5%.",
+    "likelyCause": "High SQL execution volume or inefficient execution plans.",
+    "evidence": [
+      "CPU Usage: 17.5%",
+      "AAS: 3.10",
+      "Top SQL: 5252r76yv5wga",
+      "Top SQL Contribution: 12.0%"
+    ],
+    "businessImpact": "Database throughput may be constrained by CPU saturation.",
+    "recommendation": "Review CPU-intensive SQL statements and execution plans."
+  },
+  "sql_insight": {
+    "sql_id": "5252r76yv5wga",
+    "severity": "Low",
+    "title": "Dominant SQL Statement",
+    "finding": "SQL_ID 5252r76yv5wga contributes 12.0% of total database time.",
+    "likely_cause": "CPU intensive SQL execution.",
+    "business_impact": "A single SQL statement dominates workload and may impact response times.",
+    "estimated_gain": "5-15%",
+    "evidence": [
+      "SQL_ID: 5252r76yv5wga",
+      "DB Time Contribution: 12.0%",
+      "Top Wait Event: CPU time"
+    ],
+    "recommendation": [
+      "Review execution plan",
+      "Validate indexing strategy",
+      "Check stale optimizer statistics",
+      "Evaluate SQL rewrite opportunities"
+    ]
+  },
+  "rules": {
+    "rulesEvaluated": 21,
+    "rulesTriggered": 1,
+    "findings": [
+      {
+        "ruleId": "WAIT-001",
+        "category": "Wait Events",
+        "message": "Top wait 'CPU time' dominates at 43.6% of database time.",
+        "severity": "red",
+        "recommendation": "Prioritize wait event analysis; correlate with top SQL and session blocking chains."
+      }
+    ]
+  },
+  "analysisId": "4c56eefa-dc02-4bdd-a252-da541f1736cb",
+  "fileName": "awr_report_14379_14380.html",
+  "createdAt": "2026-06-09T04:10:54.075477+00:00"
+}

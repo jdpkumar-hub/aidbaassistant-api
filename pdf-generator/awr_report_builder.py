@@ -9,7 +9,7 @@ from awr_pdf import AwrReportData, RuleFindingRow, TopSqlRow, WaitEventRow
 from bottleneck_engine import BottleneckClassificationResult
 from health_score_engine import HealthScoreResult
 from rule_models import AwrAnalysisResult, AwrMetrics, Severity
-
+from awr_pdf import AiFindingRow
 
 def _wait_severity(pct: float) -> str:
     if pct >= 25:
@@ -83,6 +83,19 @@ def build_awr_report_data(
     ]
 
     recommendations = list(analysis.top_actions or analysis.recommendations)
+    
+    ai_findings = [
+        AiFindingRow(
+            severity=(
+                f.severity.value.capitalize()
+                if hasattr(f.severity, "value")
+                else str(f.severity).capitalize()
+            ),
+            issue=f.message,
+            recommendation=f.recommendation,
+        )
+        for f in analysis.findings[:10]
+    ]
 
     return AwrReportData(
         database_name=metrics.database_name,
@@ -107,4 +120,18 @@ def build_awr_report_data(
         wait_events=wait_rows,
         top_sql=sql_rows,
         recommendations=recommendations,
+        severity=health_result.risk_level,
+        primary_bottleneck=bottleneck_result.classification,
+        confidence_score=bottleneck_result.confidence,
+        buffer_cache_hit_ratio=metrics.buffer_cache_hit_ratio_pct,
+        physical_reads_per_sec=metrics.physical_reads_per_sec,
+        log_file_sync_pct=metrics.log_file_sync_pct,
+        cpu_utilization=metrics.cpu_usage_pct,
+        aas=metrics.db_time_aas,
+        optimization_potential="20-40%",
+        sql_impact_pct=0.0,
+        optimized_sql="",
+        ai_findings=ai_findings,
+        top_sql_db_time_pct=metrics.top_sql_db_time_pct,
+        recommended_indexes=[]        
     )
