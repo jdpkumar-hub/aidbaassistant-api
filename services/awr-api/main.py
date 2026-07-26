@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 # pdf-generator engines
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parent
 _PDF_GEN = _ROOT / "pdf-generator"
 if str(_PDF_GEN) not in sys.path:
     sys.path.insert(0, str(_PDF_GEN))
